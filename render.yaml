@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: brightstart-backend
+    runtime: java
+    plan: free
+    region: frankfurt
+    rootDir: backendBrightStart-master
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/backendBrightStart-1.0-SNAPSHOT.jar
+
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: brightstart-db
+          property: connectionString
+
+      - key: DATABASE_USERNAME
+        fromDatabase:
+          name: brightstart-db
+          property: user
+
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: brightstart-db
+          property: password
+
+      - key: OPENAI_ENABLED
+        value: "false"
+
+      - key: OPENAI_API_KEY
+        sync: false
+
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+
+      - key: OPENAI_API_URL
+        value: https://api.openai.com/v1/chat/completions
+
+databases:
+  - name: brightstart-db
+    databaseName: brightstart
+    plan: free
