@@ -42,17 +42,6 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/admin/signin",
                                 "/admin/create",
-                                "/customer/create",
-                                "/customer/signin",
-                                "/products/**",
-                                "/categories/**",
-                                "/uploads/**",
-                                "/payment/create",
-                                "/customer/read/**",
-                                "/customer/read/email/**",
-                                "/orders/**",
-                                "/customers/**",
-                                "/chatbot/**",
                                 "/api/bookings/**",
                                 "/api/programs/**",
                                 "/api/progress/**"

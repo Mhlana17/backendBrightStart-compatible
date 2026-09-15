@@ -68,12 +68,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.kill-bill.billing.plugin</groupId>
-            <artifactId>killbill-plugin-api-payment</artifactId>
-            <version>0.27.0</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
         <dependency>
             <groupId>com.mysql</groupId>

@@ -41,6 +41,19 @@ public class Booking {
 
     protected Booking() {}
 
+    private Booking(Builder builder) {
+        this.bookingId = builder.bookingId;
+        this.grade = builder.grade;
+        this.sessionType = builder.sessionType;
+        this.bookingDate = builder.bookingDate;
+        this.bookingTime = builder.bookingTime;
+        this.learners = builder.learners;
+        this.pricePerWeek = builder.pricePerWeek;
+        this.totalPrice = builder.totalPrice;
+        this.status = builder.status;
+        this.createdAt = builder.createdAt;
+    }
+
     public Long getBookingId() {
         return bookingId;
     }
@@ -56,12 +69,61 @@ public class Booking {
     public String getStatus() { return status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
-    public void setGrade(String grade) { this.grade = grade; }
-    public void setSessionType(String sessionType) { this.sessionType = sessionType; }
-    public void setBookingDate(LocalDate bookingDate) { this.bookingDate = bookingDate; }
-    public void setBookingTime(LocalTime bookingTime) { this.bookingTime = bookingTime; }
-    public void setLearners(Integer learners) { this.learners = learners; }
-    public void setPricePerWeek(Double pricePerWeek) { this.pricePerWeek = pricePerWeek; }
-    public void setTotalPrice(Double totalPrice) { this.totalPrice = totalPrice; }
-    public void setStatus(String status) { this.status = status; }
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "bookingId=" + bookingId +
+                ", grade='" + grade + '\'' +
+                ", sessionType='" + sessionType + '\'' +
+                ", bookingDate=" + bookingDate +
+                ", bookingTime=" + bookingTime +
+                ", learners=" + learners +
+                ", pricePerWeek=" + pricePerWeek +
+                ", totalPrice=" + totalPrice +
+                ", status='" + status + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+
+    public static class Builder {
+        private Long bookingId;
+        private String grade;
+        private String sessionType;
+        private LocalDate bookingDate;
+        private LocalTime bookingTime;
+        private Integer learners;
+        private Double pricePerWeek = 150.0;
+        private Double totalPrice;
+        private String status = "REQUESTED";
+        private LocalDateTime createdAt = LocalDateTime.now();
+
+        public Builder setBookingId(Long bookingId) { this.bookingId = bookingId; return this; }
+        public Builder setGrade(String grade) { this.grade = grade; return this; }
+        public Builder setSessionType(String sessionType) { this.sessionType = sessionType; return this; }
+        public Builder setBookingDate(LocalDate bookingDate) { this.bookingDate = bookingDate; return this; }
+        public Builder setBookingTime(LocalTime bookingTime) { this.bookingTime = bookingTime; return this; }
+        public Builder setLearners(Integer learners) { this.learners = learners; return this; }
+        public Builder setPricePerWeek(Double pricePerWeek) { this.pricePerWeek = pricePerWeek; return this; }
+        public Builder setTotalPrice(Double totalPrice) { this.totalPrice = totalPrice; return this; }
+        public Builder setStatus(String status) { this.status = status; return this; }
+        public Builder setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; return this; }
+
+        public Builder copy(Booking booking) {
+            this.bookingId = booking.bookingId;
+            this.grade = booking.grade;
+            this.sessionType = booking.sessionType;
+            this.bookingDate = booking.bookingDate;
+            this.bookingTime = booking.bookingTime;
+            this.learners = booking.learners;
+            this.pricePerWeek = booking.pricePerWeek;
+            this.totalPrice = booking.totalPrice;
+            this.status = booking.status;
+            this.createdAt = booking.createdAt;
+            return this;
+        }
+
+        public Booking build() {
+            return new Booking(this);
+        }
+    }
 }

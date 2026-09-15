@@ -10,10 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import za.ac.cput.domain.Admin;
-import za.ac.cput.domain.Customer;
-import za.ac.cput.domain.Product;
 import za.ac.cput.factory.AdminFactory;
-import za.ac.cput.factory.CustomerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
