@@ -48,21 +48,18 @@ public class SecurityConfig {
                         // These endpoints can be accessed without a JWT token.
                         // ----------------------------------------------------
                         .requestMatchers(
+                                "/",
                                 "/actuator/health",
 
-                                // Authentication
                                 "/api/auth/**",
 
-                                // Admin authentication
                                 "/admin/signin",
                                 "/admin/create",
 
-                                // Public application data
                                 "/api/programs/**",
                                 "/api/bookings/**",
                                 "/api/progress/**"
                         ).permitAll()
-
                         // ----------------------------------------------------
                         // ALL OTHER ENDPOINTS
                         // Require authentication by default.
