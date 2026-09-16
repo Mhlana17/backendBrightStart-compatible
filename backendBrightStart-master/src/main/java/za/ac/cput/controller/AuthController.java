@@ -1,10 +1,10 @@
 package za.ac.cput.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.domain.User;
 import za.ac.cput.repository.UserRepository;
+import za.ac.cput.security.JwtUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,8 +13,13 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final JwtUtils jwtUtils;
+
+    public AuthController(UserRepository userRepository, JwtUtils jwtUtils) {
+        this.userRepository = userRepository;
+        this.jwtUtils = jwtUtils;
+    }
 
     // SignUp
     @PostMapping("/signup")
@@ -51,7 +56,7 @@ public class AuthController {
                 .filter(u -> u.getPassword().equals(password))
                 .<ResponseEntity<?>>map(u -> {
                     Map<String, Object> response = new HashMap<>();
-                    response.put("token", u.getUserId());
+                    response.put("token", jwtUtils.generateToken(u.getEmail(), "USER"));
                     response.put("name", u.getFirstName() + " " + u.getLastName());
                     response.put("email", u.getEmail());
                     response.put("role", "USER");
