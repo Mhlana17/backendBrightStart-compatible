@@ -6,7 +6,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/programs")
-@CrossOrigin(origins = "http://localhost:5173")
 public class ProgramController {
     @GetMapping
     public List<Map<String, Object>> getPrograms() {

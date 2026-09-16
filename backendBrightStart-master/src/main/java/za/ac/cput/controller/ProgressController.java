@@ -6,7 +6,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/progress")
-@CrossOrigin(origins = "http://localhost:5173")
 public class ProgressController {
     @GetMapping("/{learnerId}")
     public Map<String, Object> getProgress(@PathVariable Long learnerId) {

@@ -16,7 +16,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(origins = "http://localhost:5173")
 public class AdminController {
     private final AdminService adminService;
     private final JwtUtils jwtTokenUtil;

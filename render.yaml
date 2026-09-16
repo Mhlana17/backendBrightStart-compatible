@@ -7,6 +7,7 @@ services:
 
     rootDir: backendBrightStart-master
     dockerfilePath: ./Dockerfile
+    dockerContext: .
 
     healthCheckPath: /actuator/health
 
@@ -32,3 +33,7 @@ services:
 
       - key: JWT_SECRET
         sync: false
+
+      # Optional: tighten this to the final Vercel URL after the frontend deploy.
+      - key: CORS_ALLOWED_ORIGIN_PATTERNS
+        value: http://localhost:5173,https://*.vercel.app
