@@ -43,16 +43,32 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // ----------------------------------------------------
+                        // PUBLIC ENDPOINTS
+                        // These endpoints can be accessed without a JWT token.
+                        // ----------------------------------------------------
                         .requestMatchers(
+                                "/actuator/health",
+
+                                // Authentication
+                                "/api/auth/**",
+
+                                // Admin authentication
                                 "/admin/signin",
                                 "/admin/create",
-                                "/api/auth/**",
-                                "/actuator/health",
-                                "/api/bookings/**",
+
+                                // Public application data
                                 "/api/programs/**",
+                                "/api/bookings/**",
                                 "/api/progress/**"
                         ).permitAll()
+
+                        // ----------------------------------------------------
+                        // ALL OTHER ENDPOINTS
+                        // Require authentication by default.
+                        // ----------------------------------------------------
                         .anyRequest().authenticated()
+
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
