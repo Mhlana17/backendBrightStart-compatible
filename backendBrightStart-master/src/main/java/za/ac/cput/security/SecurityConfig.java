@@ -57,7 +57,7 @@ public class SecurityConfig {
                                 "/admin/create",
 
                                 "/api/programs/**",
-                                "/api/bookings/**",
+                                "api/bookings/**",
                                 "/api/progress/**"
                         ).permitAll()
                         // ----------------------------------------------------
