@@ -50,20 +50,11 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/actuator/health",
-
                                 "/api/auth/**",
-
                                 "/admin/signin",
                                 "/admin/create",
-
-                                "/api/programs/**",
-                                "api/bookings/**",
-                                "/api/progress/**"
+                                "/api/programs/**"
                         ).permitAll()
-                        // ----------------------------------------------------
-                        // ALL OTHER ENDPOINTS
-                        // Require authentication by default.
-                        // ----------------------------------------------------
                         .anyRequest().authenticated()
 
                 )

@@ -9,7 +9,7 @@ import za.ac.cput.service.IBookingService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/bookings")
+@RequestMapping("/api/bookings")
 public class BookingController {
     private final IBookingService service;
 
