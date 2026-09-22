@@ -5,7 +5,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.Admin;
 import za.ac.cput.repository.AdminRepository;
-
 import java.util.List;
 
 @Service
