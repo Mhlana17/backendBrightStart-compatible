@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.Arrays;
 
 @Configuration
@@ -28,62 +29,119 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
-
-    // BCryptPasswordEncoder bean.
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http
+    ) throws Exception {
+
         http
+                // Disable CSRF because this is a stateless REST API.
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // Enable CORS using the configuration below.
+                .cors(cors ->
+                        cors.configurationSource(
+                                corsConfigurationSource()
+                        )
+                )
+
+                // JWT authentication is stateless.
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
+                )
+
                 .authorizeHttpRequests(auth -> auth
-                        // ----------------------------------------------------
-                        // PUBLIC ENDPOINTS
-                        // These endpoints can be accessed without a JWT token.
-                        // ----------------------------------------------------
+
+                        // CORS preflight requests must always be allowed.
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.OPTIONS,
+                                "/**"
+                        ).permitAll()
+
+                        // Public endpoints.
                         .requestMatchers(
                                 "/",
                                 "/actuator/health",
                                 "/api/auth/**",
-                                "/admin/signin",
-                                "/api/programs/**"
+                                "/api/programs/**",
+                                "/admin/signin"
                         ).permitAll()
 
+                        // Everything else under /admin requires ADMIN.
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
 
+                        // All remaining API endpoints require login.
                         .anyRequest()
                         .authenticated()
-
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+                // Read JWT authentication before Spring's normal
+                // username/password authentication filter.
+                .addFilterBefore(
+                        jwtAuthFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
+
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.stream(allowedOriginPatterns.split(","))
-                .map(String::trim)
-                .filter(origin -> !origin.isEmpty())
-                .toList());
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+
+        CorsConfiguration configuration =
+                new CorsConfiguration();
+
+        configuration.setAllowedOriginPatterns(
+                Arrays.stream(
+                                allowedOriginPatterns.split(",")
+                        )
+                        .map(String::trim)
+                        .filter(origin ->
+                                !origin.isEmpty()
+                        )
+                        .toList()
+        );
+
+        configuration.setAllowedMethods(
+                Arrays.asList(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"
+                )
+        );
+
+        configuration.setAllowedHeaders(
+                Arrays.asList("*")
+        );
+
         configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration(
+                "/**",
+                configuration
+        );
+
         return source;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config
+    ) throws Exception {
+
         return config.getAuthenticationManager();
     }
 }
