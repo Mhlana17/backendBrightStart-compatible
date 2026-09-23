@@ -99,8 +99,8 @@ public class AdminController {
                         "ADMIN"
                 ),
 
-                "userId",
-                admin.getUserId(),
+                "adminId",
+                admin.getAdminId(),
 
                 "email",
                 admin.getEmail(),

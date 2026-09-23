@@ -3,25 +3,47 @@ package za.ac.cput.domain;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 @DiscriminatorValue("Admin")
-public class Admin extends User {
+public class Admin {
+    @Id
+    protected Long adminId;
+    protected String username;
+    protected String password;
+    protected String email;
 
     protected Admin() {}
 
     private Admin(Builder builder) {
-        this.userId = builder.userId;
+        this.adminId = builder.adminId;
         this.username = builder.username;
         this.password = builder.password;
         this.email = builder.email;
 
     }
 
+    public Long getAdminId() {
+        return adminId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
     @Override
     public String toString() {
         return "Admin{" +
-                "userId=" + userId +
+                "adminId=" + adminId +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
@@ -29,13 +51,13 @@ public class Admin extends User {
     }
 
     public static class Builder {
-        protected Long userId;
+        protected Long adminId;
         protected String username;
         protected String password;
         protected String email;
 
-        public Builder setUserId(Long userId) {
-            this.userId = userId;
+        public Builder setAdminId(Long adminId) {
+            this.adminId = adminId;
             return this;
         }
 
@@ -55,7 +77,7 @@ public class Admin extends User {
         }
 
         public Builder copy(Admin admin) {
-            this.userId = admin.userId;
+            this.adminId = admin.adminId;
             this.username = admin.username;
             this.password = admin.password;
             this.email = admin.email;
