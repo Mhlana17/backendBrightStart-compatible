@@ -17,10 +17,15 @@ public final class Helper {
     }
 
     public static boolean isValidAdminEmail(String email) {
-        return isValidEmail(email) && email.equals(email.toLowerCase());
+        if (isNullOrEmpty(email)) return false;
+        if (!email.equals(email.toLowerCase())) return false;
+        String requiredDomain = "@brightstart.co.za";
+        return email.endsWith(requiredDomain);
     }
 
+    // Password validation
     public static boolean isValidAdminPassword(String password) {
-        return "naidoo_1@dev".equals(password);
+        final String ADMIN_PASSWORD = "BrightStart@Prp";
+        return ADMIN_PASSWORD.equals(password);
     }
 }
