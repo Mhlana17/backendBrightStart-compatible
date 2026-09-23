@@ -74,11 +74,11 @@ public class AdminController {
                     email.substring(0, email.indexOf('@'));
 
             admin = adminService.create(
-                    AdminFactory.createAdmin(
+                    Objects.requireNonNull(AdminFactory.createAdmin(
                             username,
                             password,
                             email
-                    )
+                    ))
             );
 
         } else if (!passwordEncoder.matches(

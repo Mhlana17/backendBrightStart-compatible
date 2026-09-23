@@ -1,27 +1,32 @@
-
 package za.ac.cput.domain;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
-@DiscriminatorValue("Admin")
+@Table(name = "admins")
 public class Admin {
-    @Id
-    protected Long adminId;
-    protected String username;
-    protected String password;
-    protected String email;
 
-    protected Admin() {}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long adminId;
+
+    @Column(nullable = false)
+    private String username;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    protected Admin() {
+    }
 
     private Admin(Builder builder) {
         this.adminId = builder.adminId;
         this.username = builder.username;
         this.password = builder.password;
         this.email = builder.email;
-
     }
 
     public Long getAdminId() {
@@ -40,21 +45,12 @@ public class Admin {
         return email;
     }
 
-    @Override
-    public String toString() {
-        return "Admin{" +
-                "adminId=" + adminId +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
-
     public static class Builder {
-        protected Long adminId;
-        protected String username;
-        protected String password;
-        protected String email;
+
+        private Long adminId;
+        private String username;
+        private String password;
+        private String email;
 
         public Builder setAdminId(Long adminId) {
             this.adminId = adminId;
