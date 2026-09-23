@@ -1,6 +1,7 @@
 package za.ac.cput.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import za.ac.cput.domain.User;
 import za.ac.cput.repository.UserRepository;
 
@@ -12,6 +13,8 @@ import java.util.Optional;
 public class UserService implements IUserService {
 
     private final UserRepository repository;
+    private final BCryptPasswordEncoder passwordEncoder =
+            new BCryptPasswordEncoder();
     public UserService(UserRepository repository) {
         this.repository = repository;
     }
@@ -21,7 +24,7 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new IllegalArgumentException("User is required.");
         }
-        return repository.save(user);
+        return repository.save(withHashedPassword(user));
     }
 
     @Override
@@ -34,7 +37,7 @@ public class UserService implements IUserService {
         if (user == null || user.getUserId() == null || !repository.existsById(user.getUserId())) {
             return null;
         }
-        return repository.save(user);
+        return repository.save(withHashedPassword(user));
     }
 
     @Override
@@ -80,7 +83,7 @@ public class UserService implements IUserService {
                 .setFirstName(normalizedFirstName)
                 .setLastName(normalizedLastName)
                 .setEmail(normalizedEmail)
-                .setPassword(normalizedPassword)
+                .setPassword(passwordEncoder.encode(normalizedPassword))
                 .setAddress(trim(address))
                 .setPhoneNumber(trim(phoneNumber))
                 .build();
@@ -106,5 +109,20 @@ public class UserService implements IUserService {
 
     private String trim(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private User withHashedPassword(User user) {
+        if (user == null || isBcryptHash(user.getPassword())) {
+            return user;
+        }
+
+        return new User.Builder()
+                .copy(user)
+                .setPassword(passwordEncoder.encode(user.getPassword()))
+                .build();
+    }
+
+    private boolean isBcryptHash(String password) {
+        return password != null && password.matches("^\\$2[aby]\\$.{56}$");
     }
 }

@@ -38,6 +38,12 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+        <!-- Password hashing only; this does not enable web security. -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+        </dependency>
+
         <!-- PostgreSQL - required for Supabase -->
         <dependency>
             <groupId>org.postgresql</groupId>
