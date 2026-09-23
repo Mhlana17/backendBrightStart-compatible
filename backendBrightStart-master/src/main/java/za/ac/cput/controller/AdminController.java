@@ -336,7 +336,6 @@ public class AdminController {
                 integerValue(body, "writing"),
                 integerValue(body, "comprehension"),
                 integerValue(body, "speaking"),
-                integerValue(body, "overallProgress"),
                 stringValue(body, "status"),
                 stringValue(body, "comment"),
                 stringValue(body, "tutor")

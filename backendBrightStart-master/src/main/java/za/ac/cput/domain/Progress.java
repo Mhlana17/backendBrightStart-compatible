@@ -95,7 +95,6 @@ public class Progress {
             Integer writing,
             Integer comprehension,
             Integer speaking,
-            Integer overallProgress,
             String status,
             String comment,
             String tutor
@@ -105,12 +104,29 @@ public class Progress {
         this.writing = validateMark(writing);
         this.comprehension = validateMark(comprehension);
         this.speaking = validateMark(speaking);
-        this.overallProgress = validateMark(overallProgress);
+
+        /*
+         * Overall Progress is automatically calculated
+         * from the four individual skill marks.
+         */
+        this.overallProgress = calculateOverallProgress();
 
         this.status = status;
         this.comment = comment;
         this.tutor = tutor;
         this.commentDate = LocalDate.now();
+    }
+
+    private Integer calculateOverallProgress() {
+
+        double average = (
+                reading
+                        + writing
+                        + comprehension
+                        + speaking
+        ) / 4.0;
+
+        return (int) Math.round(average);
     }
 
     private Integer validateMark(Integer value) {
