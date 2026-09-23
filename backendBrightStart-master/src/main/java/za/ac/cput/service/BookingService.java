@@ -18,14 +18,21 @@ public class BookingService implements IBookingService {
 
     @Override
     public Booking create(Booking booking) {
+
         validate(booking);
-        return repository.save(new Booking.Builder()
-                .copy(booking)
-                .setBookingId(null)
-                .setStatus("REQUESTED")
-                .setPricePerWeek(PRICE_PER_WEEK)
-                .setTotalPrice(booking.getLearners() * PRICE_PER_WEEK)
-                .build());
+
+        return repository.save(
+                new Booking.Builder()
+                        .copy(booking)
+                        .setBookingId(null)
+                        .setStatus("REQUESTED")
+                        .setPricePerWeek(PRICE_PER_WEEK)
+                        .setTotalPrice(
+                                booking.getLearners()
+                                        * PRICE_PER_WEEK
+                        )
+                        .build()
+        );
     }
 
     @Override

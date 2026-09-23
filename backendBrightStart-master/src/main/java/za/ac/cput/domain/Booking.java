@@ -8,9 +8,14 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "bookings")
 public class Booking {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookingId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false)
     private String grade;
@@ -43,6 +48,7 @@ public class Booking {
 
     private Booking(Builder builder) {
         this.bookingId = builder.bookingId;
+        this.user = builder.user;
         this.grade = builder.grade;
         this.sessionType = builder.sessionType;
         this.bookingDate = builder.bookingDate;
@@ -57,36 +63,51 @@ public class Booking {
     public Long getBookingId() {
         return bookingId;
     }
+
+    public User getUser() {
+        return user;
+    }
+
     public String getGrade() {
         return grade;
     }
-    public String getSessionType() { return sessionType; }
-    public LocalDate getBookingDate() { return bookingDate; }
-    public LocalTime getBookingTime() { return bookingTime; }
-    public Integer getLearners() { return learners; }
-    public Double getPricePerWeek() { return pricePerWeek; }
-    public Double getTotalPrice() { return totalPrice; }
-    public String getStatus() { return status; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
 
-    @Override
-    public String toString() {
-        return "Booking{" +
-                "bookingId=" + bookingId +
-                ", grade='" + grade + '\'' +
-                ", sessionType='" + sessionType + '\'' +
-                ", bookingDate=" + bookingDate +
-                ", bookingTime=" + bookingTime +
-                ", learners=" + learners +
-                ", pricePerWeek=" + pricePerWeek +
-                ", totalPrice=" + totalPrice +
-                ", status='" + status + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
+    public String getSessionType() {
+        return sessionType;
+    }
+
+    public LocalDate getBookingDate() {
+        return bookingDate;
+    }
+
+    public LocalTime getBookingTime() {
+        return bookingTime;
+    }
+
+    public Integer getLearners() {
+        return learners;
+    }
+
+    public Double getPricePerWeek() {
+        return pricePerWeek;
+    }
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public static class Builder {
+
         private Long bookingId;
+        private User user;
         private String grade;
         private String sessionType;
         private LocalDate bookingDate;
@@ -97,19 +118,64 @@ public class Booking {
         private String status = "REQUESTED";
         private LocalDateTime createdAt = LocalDateTime.now();
 
-        public Builder setBookingId(Long bookingId) { this.bookingId = bookingId; return this; }
-        public Builder setGrade(String grade) { this.grade = grade; return this; }
-        public Builder setSessionType(String sessionType) { this.sessionType = sessionType; return this; }
-        public Builder setBookingDate(LocalDate bookingDate) { this.bookingDate = bookingDate; return this; }
-        public Builder setBookingTime(LocalTime bookingTime) { this.bookingTime = bookingTime; return this; }
-        public Builder setLearners(Integer learners) { this.learners = learners; return this; }
-        public Builder setPricePerWeek(Double pricePerWeek) { this.pricePerWeek = pricePerWeek; return this; }
-        public Builder setTotalPrice(Double totalPrice) { this.totalPrice = totalPrice; return this; }
-        public Builder setStatus(String status) { this.status = status; return this; }
-        public Builder setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; return this; }
+        public Builder setBookingId(Long bookingId) {
+            this.bookingId = bookingId;
+            return this;
+        }
+
+        public Builder setUser(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public Builder setGrade(String grade) {
+            this.grade = grade;
+            return this;
+        }
+
+        public Builder setSessionType(String sessionType) {
+            this.sessionType = sessionType;
+            return this;
+        }
+
+        public Builder setBookingDate(LocalDate bookingDate) {
+            this.bookingDate = bookingDate;
+            return this;
+        }
+
+        public Builder setBookingTime(LocalTime bookingTime) {
+            this.bookingTime = bookingTime;
+            return this;
+        }
+
+        public Builder setLearners(Integer learners) {
+            this.learners = learners;
+            return this;
+        }
+
+        public Builder setPricePerWeek(Double pricePerWeek) {
+            this.pricePerWeek = pricePerWeek;
+            return this;
+        }
+
+        public Builder setTotalPrice(Double totalPrice) {
+            this.totalPrice = totalPrice;
+            return this;
+        }
+
+        public Builder setStatus(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder setCreatedAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
 
         public Builder copy(Booking booking) {
             this.bookingId = booking.bookingId;
+            this.user = booking.user;
             this.grade = booking.grade;
             this.sessionType = booking.sessionType;
             this.bookingDate = booking.bookingDate;
@@ -119,6 +185,7 @@ public class Booking {
             this.totalPrice = booking.totalPrice;
             this.status = booking.status;
             this.createdAt = booking.createdAt;
+
             return this;
         }
 

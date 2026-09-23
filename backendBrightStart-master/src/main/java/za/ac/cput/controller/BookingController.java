@@ -1,68 +1,107 @@
 package za.ac.cput.controller;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import za.ac.cput.domain.Booking;
-import za.ac.cput.service.IBookingService;
+import za.ac.cput.domain.User;
+import za.ac.cput.repository.UserRepository;
+import za.ac.cput.service.BookingService;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bookings")
 public class BookingController {
-    private final IBookingService service;
 
-    public BookingController(IBookingService service) {
-        this.service = service;
+    private final BookingService bookingService;
+    private final UserRepository userRepository;
+
+    public BookingController(
+            BookingService bookingService,
+            UserRepository userRepository
+    ) {
+        this.bookingService = bookingService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping
-    public Booking create(@RequestBody Booking booking) {
-        try {
-            return service.create(booking);
-        } catch (IllegalArgumentException exception) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+    public ResponseEntity<?> createBooking(
+            @RequestBody Booking booking,
+            Authentication authentication
+    ) {
+
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(401).body(
+                    Map.of("message", "User account could not be found.")
+            );
         }
+
+        Booking bookingToSave = new Booking.Builder()
+                .copy(booking)
+                .setBookingId(null)
+                .setUser(user)
+                .setStatus("REQUESTED")
+                .build();
+
+        Booking saved = bookingService.create(bookingToSave);
+
+        return ResponseEntity.ok(toResponse(saved));
     }
 
-    @GetMapping
-    public List<Booking> getAll() {
-        return service.getAll();
+    @GetMapping("/mine")
+    public ResponseEntity<?> getMyBookings(Authentication authentication) {
+
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(401).body(
+                    Map.of("message", "User account could not be found.")
+            );
+        }
+
+        return ResponseEntity.ok(
+                bookingService.getAll()
+                        .stream()
+                        .filter(booking ->
+                                booking.getUser() != null &&
+                                        booking.getUser().getUserId().equals(user.getUserId())
+                        )
+                        .map(this::toResponse)
+                        .toList()
+        );
     }
 
-    @GetMapping("/{id}")
-    public Booking getById(@PathVariable Long id) {
-        Booking booking = service.read(id);
-        if (booking == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found");
-        }
-        return booking;
-    }
+    private Map<String, Object> toResponse(Booking booking) {
 
-    @PutMapping("/{id}")
-    public Booking update(@PathVariable Long id, @RequestBody Booking incoming) {
-        Booking existing = getById(id);
-        try {
-            Booking updated = new Booking.Builder()
-                    .copy(incoming)
-                    .setBookingId(existing.getBookingId())
-                    .build();
-            Booking result = service.update(updated);
-            if (result == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found");
-            }
-            return result;
-        } catch (IllegalArgumentException exception) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
-        }
-    }
+        Map<String, Object> response = new HashMap<>();
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        if (!service.delete(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found");
+        response.put("bookingId", booking.getBookingId());
+        response.put("grade", booking.getGrade());
+        response.put("sessionType", booking.getSessionType());
+        response.put("bookingDate", booking.getBookingDate());
+        response.put("bookingTime", booking.getBookingTime());
+        response.put("learners", booking.getLearners());
+        response.put("pricePerWeek", booking.getPricePerWeek());
+        response.put("totalPrice", booking.getTotalPrice());
+        response.put("status", booking.getStatus());
+        response.put("createdAt", booking.getCreatedAt());
+
+        if (booking.getUser() != null) {
+            response.put("userId", booking.getUser().getUserId());
+            response.put(
+                    "userName",
+                    booking.getUser().getFirstName() + " " +
+                            booking.getUser().getLastName()
+            );
+            response.put("userEmail", booking.getUser().getEmail());
         }
+
+        return response;
     }
 }

@@ -52,10 +52,14 @@ public class SecurityConfig {
                                 "/actuator/health",
                                 "/api/auth/**",
                                 "/admin/signin",
-                                "/admin/create",
                                 "/api/programs/**"
                         ).permitAll()
-                        .anyRequest().authenticated()
+
+                        .requestMatchers("/admin/**")
+                        .hasRole("ADMIN")
+
+                        .anyRequest()
+                        .authenticated()
 
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
