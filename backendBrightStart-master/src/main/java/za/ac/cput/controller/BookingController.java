@@ -1,7 +1,6 @@
 package za.ac.cput.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.domain.Booking;
 import za.ac.cput.domain.User;
@@ -28,12 +27,10 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<?> createBooking(
-            @RequestBody Booking booking,
-            Authentication authentication
+            @RequestBody Booking booking
     ) {
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElse(null);
+        User user = userRepository.findAll().stream().findFirst().orElse(null);
 
         if (user == null) {
             return ResponseEntity.status(401).body(
@@ -54,24 +51,10 @@ public class BookingController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<?> getMyBookings(Authentication authentication) {
-
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElse(null);
-
-        if (user == null) {
-            return ResponseEntity.status(401).body(
-                    Map.of("message", "User account could not be found.")
-            );
-        }
-
+    public ResponseEntity<?> getMyBookings() {
         return ResponseEntity.ok(
                 bookingService.getAll()
                         .stream()
-                        .filter(booking ->
-                                booking.getUser() != null &&
-                                        booking.getUser().getUserId().equals(user.getUserId())
-                        )
                         .map(this::toResponse)
                         .toList()
         );

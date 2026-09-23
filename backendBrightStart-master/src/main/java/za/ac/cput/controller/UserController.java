@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import za.ac.cput.domain.User;
-import za.ac.cput.security.JwtUtils;
 import za.ac.cput.service.UserService;
 
 import java.util.HashMap;
@@ -17,11 +16,8 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
-    private final JwtUtils jwtUtils;
-
-    public UserController(UserService userService, JwtUtils jwtUtils) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/register")
@@ -48,7 +44,7 @@ public class UserController {
         return userService.authenticate(request.get("email"), request.get("password"))
                 .<ResponseEntity<?>>map(user -> {
                     Map<String, Object> response = new HashMap<>();
-                    response.put("token", jwtUtils.generateToken(user.getEmail(), "USER"));
+                    response.put("token", "security-disabled");
                     response.put("user", publicUser(user));
                     return ResponseEntity.ok(response);
                 })

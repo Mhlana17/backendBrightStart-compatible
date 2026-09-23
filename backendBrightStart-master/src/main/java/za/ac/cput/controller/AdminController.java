@@ -1,7 +1,6 @@
 package za.ac.cput.controller;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -9,13 +8,10 @@ import za.ac.cput.domain.Admin;
 import za.ac.cput.domain.Booking;
 import za.ac.cput.domain.Progress;
 import za.ac.cput.domain.User;
-import za.ac.cput.factory.AdminFactory;
 import za.ac.cput.repository.BookingRepository;
 import za.ac.cput.repository.ProgressRepository;
 import za.ac.cput.repository.UserRepository;
-import za.ac.cput.security.JwtUtils;
 import za.ac.cput.service.AdminService;
-import za.ac.cput.util.Helper;
 
 import java.util.*;
 
@@ -24,23 +20,17 @@ import java.util.*;
 public class AdminController {
 
     private final AdminService adminService;
-    private final JwtUtils jwtTokenUtil;
-    private final PasswordEncoder passwordEncoder;
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ProgressRepository progressRepository;
 
     public AdminController(
             AdminService adminService,
-            JwtUtils jwtTokenUtil,
-            PasswordEncoder passwordEncoder,
             BookingRepository bookingRepository,
             UserRepository userRepository,
             ProgressRepository progressRepository
     ) {
         this.adminService = adminService;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.passwordEncoder = passwordEncoder;
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.progressRepository = progressRepository;
@@ -57,12 +47,10 @@ public class AdminController {
         String email = credentials.get("email");
         String password = credentials.get("password");
 
-        if (!Helper.isValidAdminEmail(email) ||
-                !Helper.isValidAdminPassword(password)) {
-
+        if (email == null || email.isBlank() || !email.contains("@")) {
             throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Invalid admin credentials"
+                    HttpStatus.BAD_REQUEST,
+                    "A valid email is required"
             );
         }
 
@@ -74,30 +62,17 @@ public class AdminController {
                     email.substring(0, email.indexOf('@'));
 
             admin = adminService.create(
-                    Objects.requireNonNull(AdminFactory.createAdmin(
-                            username,
-                            password,
-                            email
-                    ))
-            );
-
-        } else if (!passwordEncoder.matches(
-                password,
-                admin.getPassword()
-        )) {
-
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Invalid admin credentials"
+                    new Admin.Builder()
+                            .setUsername(username)
+                            .setPassword(password == null ? "" : password)
+                            .setEmail(email)
+                            .build()
             );
         }
 
         return Map.of(
                 "token",
-                jwtTokenUtil.generateToken(
-                        admin.getEmail(),
-                        "ADMIN"
-                ),
+                "security-disabled",
 
                 "adminId",
                 admin.getAdminId(),

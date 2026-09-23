@@ -1,6 +1,5 @@
 package za.ac.cput.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import za.ac.cput.domain.User;
 import za.ac.cput.repository.UserRepository;
@@ -13,11 +12,8 @@ import java.util.Optional;
 public class UserService implements IUserService {
 
     private final UserRepository repository;
-    private final PasswordEncoder passwordEncoder;
-
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repository) {
         this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -84,7 +80,7 @@ public class UserService implements IUserService {
                 .setFirstName(normalizedFirstName)
                 .setLastName(normalizedLastName)
                 .setEmail(normalizedEmail)
-                .setPassword(passwordEncoder.encode(normalizedPassword))
+                .setPassword(normalizedPassword)
                 .setAddress(trim(address))
                 .setPhoneNumber(trim(phoneNumber))
                 .build();
@@ -93,11 +89,7 @@ public class UserService implements IUserService {
 
     @Override
     public Optional<User> authenticate(String email, String password) {
-        if (password == null || password.isBlank()) {
-            return Optional.empty();
-        }
-        return findByEmail(email)
-                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
+        return findByEmail(email);
     }
 
     private String normalizeEmail(String email) {
